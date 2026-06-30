@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Biblioteczny</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* VARIABLES & THEME */
+    :root {
+      --bg-base: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-hover: #334155;
+      --bg-input: #0f172a;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --accent-success: #10b981;
+      --accent-success-hover: #059669;
+      --accent-success-glow: rgba(16, 185, 129, 0.2);
+      --accent-danger: #f43f5e;
+      --accent-danger-hover: #e11d48;
+      --accent-danger-glow: rgba(244, 63, 94, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* GLOBAL STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* SCROLLBARS */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-surface-hover);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-md);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: white;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .logo-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-success);
+      box-shadow: 0 0 8px var(--accent-success);
+    }
+
+    /* MAIN CONTAINER */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      flex-grow: 1;
+      height: calc(100vh - 89px);
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+      }
+    }
+
+    /* SIDEBAR (LEFT COLUMN) */
+    .sidebar {
+      background-color: rgba(30, 41, 59, 0.5);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        height: 400px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+
+    .search-container {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .list-stats {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      padding: 0 0.25rem;
+    }
+
+    /* BOOK LIST */
+    .book-list {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .book-item {
+      background-color: rgba(30, 41, 59, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: left;
+    }
+
+    .book-item:hover {
+      background-color: var(--bg-surface-hover);
+      transform: translateY(-1px);
+    }
+
+    .book-item.active {
+      background-color: rgba(99, 102, 241, 0.15);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+
+    .book-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .book-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .book-item-author {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .book-item-footer {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .book-item-id {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .badge-success {
+      background-color: var(--accent-success-glow);
+      color: var(--accent-success);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .badge-danger {
+      background-color: var(--accent-danger-glow);
+      color: var(--accent-danger);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    /* DETAILS AREA (RIGHT COLUMN) */
+    .details-area {
+      padding: 2rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .details-area {
+        padding: 1.25rem;
+      }
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 3rem;
+      border: 2px dashed rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.2);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    /* BOOK DETAIL CARD */
+    .detail-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .detail-header-text h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-header-text .author {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .info-group {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 0.85rem 1.1rem;
+      border-radius: 10px;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .info-value-mono {
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    /* ACTION CARD */
+    .action-card {
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .action-card.available {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, rgba(16, 185, 129, 0.01) 100%);
+      border-color: rgba(16, 185, 129, 0.15);
+    }
+
+    .action-card.borrowed {
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.03) 0%, rgba(244, 63, 94, 0.01) 100%);
+      border-color: rgba(244, 63, 94, 0.15);
+    }
+
+    .action-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .select-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .select-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CUSTOM SELECT */
+    select {
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      outline: none;
+      font-family: var(--font-family);
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-family: var(--font-family);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-primary {
+      background-color: var(--accent-success);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--accent-success-hover);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-danger {
+      background-color: var(--accent-danger);
+      color: white;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background-color: var(--accent-danger-hover);
+      box-shadow: 0 6px 16px rgba(244, 63, 94, 0.3);
+    }
+
+    .btn:disabled {
+      background-color: var(--bg-surface-hover);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* TOASTS NOTIFICATIONS */
+    #toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 400px;
+    }
+
+    .toast {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transform: translateX(120%);
+      transition: var(--transition-smooth);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-success {
+      border-left: 4px solid var(--accent-success);
+    }
+
+    .toast-error {
+      border-left: 4px solid var(--accent-danger);
+    }
+
+    .toast-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .toast-success .toast-icon { color: var(--accent-success); }
+    .toast-error .toast-icon { color: var(--accent-danger); }
+
+    /* LOADING OVERLAYS */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(15, 23, 42, 0.85);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: var(--transition-smooth);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(99, 102, 241, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .spinner-sm {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* UTILITIES */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="overlay show">
+    <div class="spinner"></div>
+    <p style="font-weight: 500; font-size: 0.95rem; color: var(--text-secondary);">Ładowanie bazy danych...</p>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">B</div>
+      <div class="logo-text">
+        <h1>Panel Biblioteki</h1>
+        <p>Zarządzanie wypożyczeniami książek</p>
+      </div>
+    </div>
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>Połączono z Arkuszem</span>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD -->
+  <div class="dashboard">
+    <!-- SIDEBAR: SEARCH & LIST -->
+    <div class="sidebar">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+          </svg>
+          <input type="text" id="search-bar" class="search-input" placeholder="Szukaj książki..." oninput="filterBooks()">
+        </div>
+        <div class="list-stats">
+          <span id="books-count">Wczytywanie...</span>
+        </div>
+      </div>
+      
+      <div id="book-list-container" class="book-list">
+        <!-- Dynamically loaded books will appear here -->
+      </div>
+    </div>
+
+    <!-- DETAILS AREA -->
+    <div id="details-area" class="details-area">
+      <!-- EMPTY STATE (default) -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-state-icon">📖</div>
+        <h3>Brak wybranej książki</h3>
+        <p>Wybierz pozycję z listy po lewej stronie, aby zarządzać statusem wypożyczenia.</p>
+      </div>
+
+      <!-- BOOK DETAIL CARD (hidden by default) -->
+      <div id="detail-card" class="detail-card hidden">
+        <div class="detail-header">
+          <div class="detail-header-text">
+            <h2 id="det-title">Tytuł Książki</h2>
+            <span class="author">Autor: <span id="det-author">Autor</span></span>
+          </div>
+          <span id="det-status-badge" class="badge">Dostępna</span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="info-group">
+            <div class="info-label">Nr Inwentarza (ID)</div>
+            <div id="det-id" class="info-value info-value-mono">-</div>
+          </div>
+          <div class="info-group">
+            <div class="info-label">Wydawnictwo</div>
+            <div id="det-publisher" class="info-value">-</div>
+          </div>
+          <div class="info-group">
+            <div class="info-label">Lokalizacja</div>
+            <div id="det-location" class="info-value">-</div>
+          </div>
+        </div>
+
+        <!-- ACTION BLOCKS -->
+        <!-- Action 1: Assign (If Book is Available) -->
+        <div id="action-borrow" class="action-card available hidden">
+          <h3 class="action-title" style="color: var(--accent-success);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1.5a.5.5 0 0 1-1 0V11a.5.5 0 0 1 1 0m0 3a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-9-9h10v-.5a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5zm10 1v1.382a4.96 4.96 0 0 0-1-.2V4H3v8h4.085c.086.355.22.695.397 1H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            Wypożyczenie Książki
+          </h3>
+          
+          <div class="select-grid">
+            <div class="form-group">
+              <label class="form-label" for="select-class">Wybierz Klasę</label>
+              <select id="select-class" onchange="handleClassChange(this.value)">
+                <option value="" disabled selected>-- Wybierz Klasę --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="select-student">Wybierz Ucznia</label>
+              <select id="select-student" disabled>
+                <option value="" disabled selected>-- Najpierw wybierz klasę --</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="btn-borrow" class="btn btn-primary" onclick="submitBorrow()" disabled>
+            <span>Przypisz książkę do ucznia</span>
+          </button>
+        </div>
+
+        <!-- Action 2: Return (If Book is Borrowed) -->
+        <div id="action-return" class="action-card borrowed hidden">
+          <h3 class="action-title" style="color: var(--accent-danger);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.5-5v1.5a.5.5 0 0 0 1 0V11a.5.5 0 0 0-1 0m0 3a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v5.085c.345.086.675.22 1 .397V3a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4.085c-.177-.305-.31-.645-.397-1H3a1 1 0 0 1-1-1z"/>
+            </svg>
+            Wypożyczający i Zwrot
+          </h3>
+          
+          <div class="info-group" style="background-color: rgba(244, 63, 94, 0.03); border-color: rgba(244, 63, 94, 0.08);">
+            <div class="info-label" style="color: var(--accent-danger);">Książka wypożyczona przez:</div>
+            <div id="det-borrower" class="info-value" style="font-weight: 600; white-space: pre-line;">-</div>
+          </div>
+
+          <button id="btn-return" class="btn btn-danger" onclick="submitReturn()">
+            <span>Zwróć książkę</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOASTS CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- CLIENT-SIDE SCRIPT -->
+  <script>
+    // State management
+    let allBooks = [];
+    let classesList = [];
+    let currentSelectedBook = null;
+    let studentsCache = {};
+
+    // Mock environments for local browser preview/design testing
+    const isLocalMock = typeof google === 'undefined' || typeof google.script === 'undefined';
+
+    // Mock initialization
+    if (isLocalMock) {
+      console.warn("Uruchomiono w trybie demonstracyjnym (Local Mock). Funkcje backendu Google Apps Script są symulowane.");
+      
+      // Mock data representing a Google Sheet response
+      allBooks = [
+        { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "" },
+        { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25" },
+        { id: "103/C", title: "Lalka", author: "Bolesław Prus", publisher: "PWN", location: "Regał B1", status: "Dostępna", details: "" },
+        { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
+      ];
+      classesList = ["KRYPTONY", "WODORKI"];
+      studentsCache = {
+        "KRYPTONY": [{ name: "Jan Kowalski", colIndex: 1 }, { name: "Maria Wiśniewska", colIndex: 4 }],
+        "WODORKI": [{ name: "Anna Nowak", colIndex: 1 }, { name: "Piotr Wójcik", colIndex: 4 }]
+      };
+      
+      setTimeout(() => {
+        hideLoader();
+        renderBooksList(allBooks);
+        populateClasses(classesList);
+        showToast("Załadowano dane testowe.", "success");
+      }, 800);
+    } else {
+      // Real App Script load
+      window.onload = function() {
+        loadData();
+      };
+    }
+
+    // LOAD INITIAL DATA
+    function loadData() {
+      showLoader();
+      let pendingLoads = 2;
+
+      function checkCompleted() {
+        pendingLoads--;
+        if (pendingLoads === 0) {
+          hideLoader();
+        }
+      }
+
+      // Load books
+      google.script.run
+        .withSuccessHandler(function(books) {
+          allBooks = books || [];
+          renderBooksList(allBooks);
+          checkCompleted();
+        })
+        .withFailureHandler(function(err) {
+          showToast("Błąd ładowania książek: " + (err.message || err), "error");
+          checkCompleted();
+        })
+        .getBooksData();
+
+      // Load classes
+      google.script.run
+        .withSuccessHandler(function(classes) {
+          classesList = classes || [];
+          populateClasses(classesList);
+          checkCompleted();
+        })
+        .withFailureHandler(function(err) {
+          showToast("Błąd ładowania klas: " + (err.message || err), "error");
+          checkCompleted();
+        })
+        .getClassesList();
+    }
+
+    // RENDER BOOKS LIST
+    function renderBooksList(books) {
+      const container = document.getElementById("book-list-container");
+      container.innerHTML = "";
+
+      if (books.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;">Brak książek w bazie</div>`;
+        document.getElementById("books-count").innerText = "Suma: 0 książek";
+        return;
+      }
+
+      books.forEach(book => {
+        const item = document.createElement("div");
+        item.className = "book-item";
+        if (currentSelectedBook && currentSelectedBook.id === book.id) {
+          item.classList.add("active");
+        }
+        item.onclick = () => selectBook(book);
+
+        const isAvailable = book.status === "Dostępna";
+        const statusBadgeClass = isAvailable ? "badge-success" : "badge-danger";
+
+        item.innerHTML = `
+          <div class="book-item-header">
+            <span class="book-item-title">${escapeHtml(book.title)}</span>
+            <span class="badge ${statusBadgeClass}">${escapeHtml(book.status)}</span>
+          </div>
+          <span class="book-item-author">${escapeHtml(book.author)}</span>
+          <div class="book-item-footer">
+            <span class="book-item-id">Nr: ${escapeHtml(book.id)}</span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById("books-count").innerText = `Suma: ${books.length} książek`;
+    }
+
+    // SEARCH FILTER
+    function filterBooks() {
+      const query = document.getElementById("search-bar").value.toLowerCase().trim();
+      if (!query) {
+        renderBooksList(allBooks);
+        return;
+      }
+
+      const filtered = allBooks.filter(book => {
+        return (
+          (book.title && book.title.toLowerCase().includes(query)) ||
+          (book.author && book.author.toLowerCase().includes(query)) ||
+          (book.id && book.id.toLowerCase().includes(query)) ||
+          (book.publisher && book.publisher.toLowerCase().includes(query)) ||
+          (book.location && book.location.toLowerCase().includes(query))
+        );
+      });
+      renderBooksList(filtered);
+    }
+
+    // POPULATE CLASSES DROPDOWN
+    function populateClasses(classes) {
+      const select = document.getElementById("select-class");
+      select.innerHTML = '<option value="" disabled selected>-- Wybierz Klasę --</option>';
+      
+      classes.forEach(cls => {
+        const opt = document.createElement("option");
+        opt.value = cls;
+        opt.textContent = cls;
+        select.appendChild(opt);
+      });
+    }
+
+    // CLASS CHANGE ACTION: LOAD STUDENTS
+    function handleClassChange(className) {
+      const studentSelect = document.getElementById("select-student");
+      const btnBorrow = document.getElementById("btn-borrow");
+      
+      studentSelect.disabled = true;
+      btnBorrow.disabled = true;
+      studentSelect.innerHTML = '<option value="" disabled selected>Pobieranie listy uczniów...</option>';
+
+      // Check if cache contains the students
+      if (studentsCache[className]) {
+        populateStudents(studentsCache[className]);
+        return;
+      }
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          populateStudents(studentsCache[className]);
+        }, 300);
+        return;
+      }
+
+      // App Script Call
+      google.script.run
+        .withSuccessHandler(function(students) {
+          studentsCache[className] = students || [];
+          populateStudents(students || []);
+        })
+        .withFailureHandler(function(err) {
+          showToast("Błąd pobierania uczniów: " + (err.message || err), "error");
+          studentSelect.innerHTML = '<option value="" disabled selected>Błąd ładowania</option>';
+        })
+        .getStudentsFromClass(className);
+    }
+
+    function populateStudents(students) {
+      const studentSelect = document.getElementById("select-student");
+      studentSelect.innerHTML = '<option value="" disabled selected>-- Wybierz Ucznia --</option>';
+
+      if (students.length === 0) {
+        studentSelect.innerHTML = '<option value="" disabled selected>Brak uczniów w tej klasie</option>';
+        return;
+      }
+
+      students.forEach(student => {
+        const opt = document.createElement("option");
+        opt.value = student.name;
+        opt.textContent = student.name;
+        studentSelect.appendChild(opt);
+      });
+
+      studentSelect.disabled = false;
+      
+      // Setup change listener to enable/disable button
+      studentSelect.onchange = function() {
+        document.getElementById("btn-borrow").disabled = !this.value;
+      };
+    }
+
+    // SELECT A BOOK
+    function selectBook(book) {
+      currentSelectedBook = book;
+
+      // Update active state in list
+      const items = document.querySelectorAll(".book-item");
+      items.forEach(el => {
+        el.classList.remove("active");
+        const titleSpan = el.querySelector(".book-item-title");
+        if (titleSpan && titleSpan.innerText === book.title) {
+          const idSpan = el.querySelector(".book-item-id");
+          if (idSpan && idSpan.innerText.includes(book.id)) {
+            el.classList.add("active");
+          }
+        }
+      });
+
+      // Show card and hide empty state
+      document.getElementById("empty-state").classList.add("hidden");
+      const card = document.getElementById("detail-card");
+      card.classList.remove("hidden");
+
+      // Fill in static details
+      document.getElementById("det-title").innerText = book.title;
+      document.getElementById("det-author").innerText = book.author;
+      document.getElementById("det-id").innerText = book.id;
+      document.getElementById("det-publisher").innerText = book.publisher || "Brak danych";
+      document.getElementById("det-location").innerText = book.location || "Brak danych";
+
+      // Render status badge
+      const statusBadge = document.getElementById("det-status-badge");
+      statusBadge.innerText = book.status;
+      statusBadge.className = "badge " + (book.status === "Dostępna" ? "badge-success" : "badge-danger");
+
+      // Toggle operation cards
+      const actionBorrow = document.getElementById("action-borrow");
+      const actionReturn = document.getElementById("action-return");
+
+      // Reset action forms
+      document.getElementById("select-class").value = "";
+      const studentSelect = document.getElementById("select-student");
+      studentSelect.innerHTML = '<option value="" disabled selected>-- Najpierw wybierz klasę --</option>';
+      studentSelect.disabled = true;
+      document.getElementById("btn-borrow").disabled = true;
+
+      if (book.status === "Dostępna") {
+        actionBorrow.classList.remove("hidden");
+        actionReturn.classList.add("hidden");
+      } else {
+        actionBorrow.classList.add("hidden");
+        actionReturn.classList.remove("hidden");
+        document.getElementById("det-borrower").innerText = book.details || "Nieznany uczeń";
+      }
+    }
+
+    // SUBMIT BORROW
+    function submitBorrow() {
+      if (!currentSelectedBook) return;
+      const classSelect = document.getElementById("select-class");
+      const studentSelect = document.getElementById("select-student");
+      const btn = document.getElementById("btn-borrow");
+
+      const className = classSelect.value;
+      const studentName = studentSelect.value;
+      const bookId = currentSelectedBook.id;
+
+      if (!className || !studentName) {
+        showToast("Wypełnij klasę oraz wybierz ucznia.", "error");
+        return;
+      }
+
+      setButtonLoading(btn, true, "Wypożyczanie...");
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          // Update mock databases
+          const bookIndex = allBooks.findIndex(b => b.id === bookId);
+          if (bookIndex !== -1) {
+            allBooks[bookIndex].status = "Wypożyczona";
+            const today = new Date().toISOString().split('T')[0];
+            allBooks[bookIndex].details = `${studentName}\n${today}`;
+            selectBook(allBooks[bookIndex]);
+            filterBooks();
+          }
+          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          showToast(`Pomyślnie wypożyczono książkę dla: ${studentName}`, "success");
+        }, 1000);
+        return;
+      }
+
+      // App Script Execution
+      google.script.run
+        .withSuccessHandler(function(responseMessage) {
+          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          showToast(responseMessage, "success");
+          
+          // Refresh list and keep selected state
+          refreshDataAndKeepSelection(bookId);
+        })
+        .withFailureHandler(function(err) {
+          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          showToast("Wypożyczenie nie powiodło się: " + (err.message || err), "error");
+        })
+        .borrowBook(bookId, studentName, className);
+    }
+
+    // SUBMIT RETURN
+    function submitReturn() {
+      if (!currentSelectedBook) return;
+      const btn = document.getElementById("btn-return");
+      const bookId = currentSelectedBook.id;
+
+      setButtonLoading(btn, true, "Zwracanie...");
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          // Update mock database
+          const bookIndex = allBooks.findIndex(b => b.id === bookId);
+          if (bookIndex !== -1) {
+            allBooks[bookIndex].status = "Dostępna";
+            allBooks[bookIndex].details = "";
+            selectBook(allBooks[bookIndex]);
+            filterBooks();
+          }
+          setButtonLoading(btn, false, "Zwróć książkę");
+          showToast("Książka została zwrócona do biblioteki.", "success");
+        }, 1000);
+        return;
+      }
+
+      // App Script Execution
+      google.script.run
+        .withSuccessHandler(function(responseMessage) {
+          setButtonLoading(btn, false, "Zwróć książkę");
+          showToast(responseMessage, "success");
+          
+          // Refresh list and keep selected state
+          refreshDataAndKeepSelection(bookId);
+        })
+        .withFailureHandler(function(err) {
+          setButtonLoading(btn, false, "Zwróć książkę");
+          showToast("Zwrot nie powiódł się: " + (err.message || err), "error");
+        })
+        .returnBook(bookId);
+    }
+
+    // REFRESH DATA & PRESERVE SELECTED ITEM
+    function refreshDataAndKeepSelection(selectedId) {
+      google.script.run
+        .withSuccessHandler(function(books) {
+          allBooks = books || [];
+          filterBooks();
+          
+          // Find updated book state and select it
+          const updatedBook = allBooks.find(b => b.id == selectedId);
+          if (updatedBook) {
+            selectBook(updatedBook);
+          } else {
+            // Hide card if book disappeared
+            document.getElementById("detail-card").classList.add("hidden");
+            document.getElementById("empty-state").classList.remove("hidden");
+            currentSelectedBook = null;
+          }
+        })
+        .withFailureHandler(function(err) {
+          showToast("Błąd odświeżania danych: " + (err.message || err), "error");
+        })
+        .getBooksData();
+    }
+
+    // LOADERS & BUTTON STATES
+    function showLoader() {
+      document.getElementById("loading-overlay").classList.add("show");
+    }
+
+    function hideLoader() {
+      document.getElementById("loading-overlay").classList.remove("show");
+    }
+
+    function setButtonLoading(button, isLoading, text) {
+      button.disabled = isLoading;
+      if (isLoading) {
+        button.innerHTML = `<span class="spinner-sm"></span> <span>${text}</span>`;
+      } else {
+        button.innerHTML = `<span>${text}</span>`;
+      }
+    }
+
+    // TOAST SYSTEM
+    function showToast(message, type = 'success') {
+      const container = document.getElementById("toast-container");
+      
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      
+      const icon = type === 'success' ? '✓' : '✗';
+      
+      toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span>${escapeHtml(message)}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Trigger reflow to apply transition
+      toast.offsetHeight;
+      toast.classList.add("show");
+      
+      // Remove toast after delay
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 4000);
+    }
+
+    // HTML ESCAPE HELPER
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
