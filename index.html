@@ -1069,7 +1069,7 @@
     // CONFIGURATION: Set this to your Google Apps Script Web App URL if deploying
     // externally (e.g. GitHub Pages).
     // Leave it empty "" if hosting directly inside Google Apps Script (HtmlService).
-    const API_URL = "https://script.google.com/macros/s/AKfycbxjOeOPPdHLyv7QKN3VZg7JQdjADqozOhuSWZDFsmuPODNeEKglU3r94guKC6ZUshvfkQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzMZSn2_nX3elIXiY5YCkGYK5j8YVvs26R8BMsiIZM_zYUqtGZAHnXzRuvpseGg95edbg/exec";
     // =========================================================================
 
     // Determine environment mode
@@ -1329,22 +1329,28 @@
       
       let filtered = allBooks;
       
-      // 1. Filter by status
+      // 1. Filter by status (trimmed matching)
       if (currentBookFilter === 'available') {
-        filtered = filtered.filter(book => book.status === 'Dostępna');
+        filtered = filtered.filter(book => book.status && book.status.trim() === 'Dostępna');
       } else if (currentBookFilter === 'borrowed') {
-        filtered = filtered.filter(book => book.status === 'Wypożyczona');
+        filtered = filtered.filter(book => book.status && book.status.trim() === 'Wypożyczona');
       }
       
       // 2. Filter by search query
       if (query) {
         filtered = filtered.filter(book => {
+          const title = book.title ? String(book.title).toLowerCase() : "";
+          const author = book.author ? String(book.author).toLowerCase() : "";
+          const id = book.id ? String(book.id).toLowerCase() : "";
+          const publisher = book.publisher ? String(book.publisher).toLowerCase() : "";
+          const location = book.location ? String(book.location).toLowerCase() : "";
+          
           return (
-            (book.title && book.title.toLowerCase().includes(query)) ||
-            (book.author && book.author.toLowerCase().includes(query)) ||
-            (book.id && book.id.toLowerCase().includes(query)) ||
-            (book.publisher && book.publisher.toLowerCase().includes(query)) ||
-            (book.location && book.location.toLowerCase().includes(query))
+            title.includes(query) ||
+            author.includes(query) ||
+            id.includes(query) ||
+            publisher.includes(query) ||
+            location.includes(query)
           );
         });
       }
