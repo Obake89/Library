@@ -136,6 +136,16 @@
       box-shadow: 0 0 8px var(--accent-success);
     }
 
+    .status-dot.offline {
+      background-color: #e2e8f0;
+      box-shadow: none;
+    }
+
+    .status-dot.external {
+      background-color: #3b82f6;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+
     /* MAIN CONTAINER */
     .dashboard {
       display: grid;
@@ -671,8 +681,8 @@
       </div>
     </div>
     <div class="status-indicator">
-      <div class="status-dot"></div>
-      <span>Połączono z Arkuszem</span>
+      <div id="status-indicator-dot" class="status-dot"></div>
+      <span id="status-indicator-text">Połączono z Arkuszem</span>
     </div>
   </header>
 
@@ -794,37 +804,143 @@
     let currentSelectedBook = null;
     let studentsCache = {};
 
-    // Mock environments for local browser preview/design testing
-    const isLocalMock = typeof google === 'undefined' || typeof google.script === 'undefined';
+    // =========================================================================
+    // CONFIGURATION: Set this to your Google Apps Script Web App URL if deploying
+    // externally (e.g. GitHub Pages).
+    // Leave it empty "" if hosting directly inside Google Apps Script (HtmlService).
+    // Example: const API_URL = "https://script.google.com/macros/s/AKfycbwY.../exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwvOSMMEqOEBPUmCa49we4L8YZ8Tm9d0265O4ntSPAqRCeFx8ipTYZwwMWZZdeBKaJhDQ/exec";
+    // =========================================================================
 
-    // Mock initialization
+    // Determine environment mode
+    const hasAppsScriptEnv = typeof google !== 'undefined' && typeof google.script !== 'undefined';
+    const isLocalMock = !API_URL && !hasAppsScriptEnv;
+
+    // Set UI Status indicators
+    document.addEventListener("DOMContentLoaded", () => {
+      const dot = document.getElementById("status-indicator-dot");
+      const text = document.getElementById("status-indicator-text");
+      
+      if (isLocalMock) {
+        dot.className = "status-dot offline";
+        text.innerText = "Dane demonstracyjne (Local Mock)";
+      } else if (API_URL) {
+        dot.className = "status-dot external";
+        text.innerText = "Połączono z API (Zewnętrzne)";
+      } else {
+        dot.className = "status-dot";
+        text.innerText = "Połączono z Arkuszem (Apps Script)";
+      }
+    });
+
+    // Mock initial data
+    const mockBooks = [
+      { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "" },
+      { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25" },
+      { id: "103/C", title: "Lalka", author: "Bolesław Prus", publisher: "PWN", location: "Regał B1", status: "Dostępna", details: "" },
+      { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
+    ];
+    const mockClasses = ["KRYPTONY", "WODORKI"];
+    const mockStudents = {
+      "KRYPTONY": [{ name: "Jan Kowalski", colIndex: 1 }, { name: "Maria Wiśniewska", colIndex: 4 }],
+      "WODORKI": [{ name: "Anna Nowak", colIndex: 1 }, { name: "Piotr Wójcik", colIndex: 4 }]
+    };
+
+    // Initialize application
     if (isLocalMock) {
       console.warn("Uruchomiono w trybie demonstracyjnym (Local Mock). Funkcje backendu Google Apps Script są symulowane.");
-      
-      // Mock data representing a Google Sheet response
-      allBooks = [
-        { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "" },
-        { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25" },
-        { id: "103/C", title: "Lalka", author: "Bolesław Prus", publisher: "PWN", location: "Regał B1", status: "Dostępna", details: "" },
-        { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
-      ];
-      classesList = ["KRYPTONY", "WODORKI"];
-      studentsCache = {
-        "KRYPTONY": [{ name: "Jan Kowalski", colIndex: 1 }, { name: "Maria Wiśniewska", colIndex: 4 }],
-        "WODORKI": [{ name: "Anna Nowak", colIndex: 1 }, { name: "Piotr Wójcik", colIndex: 4 }]
-      };
+      allBooks = mockBooks;
+      classesList = mockClasses;
+      studentsCache = mockStudents;
       
       setTimeout(() => {
         hideLoader();
         renderBooksList(allBooks);
         populateClasses(classesList);
-        showToast("Załadowano dane testowe.", "success");
+        showToast("Załadowano dane testowe offline.", "success");
       }, 800);
     } else {
-      // Real App Script load
       window.onload = function() {
         loadData();
       };
+    }
+
+    // GENERALIZED API CALLING LAYER (Supports Native Apps Script & External fetch API)
+    function callApi(action, method, payload, successCallback, failureCallback) {
+      if (isLocalMock) {
+        return; // Handled directly inside operational functions
+      }
+
+      // External API fetch mode (CORS-safe simple requests)
+      if (API_URL) {
+        const url = new URL(API_URL);
+        let options = { redirect: 'follow' };
+
+        if (method === 'POST') {
+          options.method = 'POST';
+          // Send as text/plain to bypass CORS preflight check (OPTIONS)
+          options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+          options.body = JSON.stringify({ action: action, ...payload });
+        } else {
+          options.method = 'GET';
+          url.searchParams.append('action', action);
+          if (payload) {
+            for (let key in payload) {
+              url.searchParams.append(key, payload[key]);
+            }
+          }
+        }
+
+        fetch(url.toString(), options)
+          .then(response => {
+            if (!response.ok) throw new Error("Status HTTP: " + response.status);
+            return response.json();
+          })
+          .then(result => {
+            if (result.status === 'success') {
+              successCallback(result.data !== undefined ? result.data : result.message);
+            } else {
+              failureCallback(result.message || "Wystąpił nieznany błąd serwera.");
+            }
+          })
+          .catch(error => {
+            console.error("API Error details:", error);
+            failureCallback("Błąd połączenia z API: " + (error.message || error));
+          });
+      } 
+      // Native Google Apps Script execution mode
+      else if (hasAppsScriptEnv) {
+        if (method === 'GET') {
+          if (action === 'getBooksData') {
+            google.script.run
+              .withSuccessHandler(successCallback)
+              .withFailureHandler(failureCallback)
+              .getBooksData();
+          } else if (action === 'getClassesList') {
+            google.script.run
+              .withSuccessHandler(successCallback)
+              .withFailureHandler(failureCallback)
+              .getClassesList();
+          } else if (action === 'getStudentsFromClass') {
+            google.script.run
+              .withSuccessHandler(successCallback)
+              .withFailureHandler(failureCallback)
+              .getStudentsFromClass(payload.className);
+          }
+        } else if (method === 'POST') {
+          if (action === 'borrowBook') {
+            google.script.run
+              .withSuccessHandler(successCallback)
+              .withFailureHandler(failureCallback)
+              .borrowBook(payload.bookId, payload.studentName, payload.className);
+          } else if (action === 'returnBook') {
+            google.script.run
+              .withSuccessHandler(successCallback)
+              .withFailureHandler(failureCallback)
+              .returnBook(payload.bookId);
+          }
+        }
+      }
     }
 
     // LOAD INITIAL DATA
@@ -834,36 +950,34 @@
 
       function checkCompleted() {
         pendingLoads--;
-        if (pendingLoads === 0) {
-          hideLoader();
-        }
+        if (pendingLoads === 0) hideLoader();
       }
 
-      // Load books
-      google.script.run
-        .withSuccessHandler(function(books) {
+      // Fetch Books
+      callApi('getBooksData', 'GET', null,
+        function(books) {
           allBooks = books || [];
           renderBooksList(allBooks);
           checkCompleted();
-        })
-        .withFailureHandler(function(err) {
-          showToast("Błąd ładowania książek: " + (err.message || err), "error");
+        },
+        function(err) {
+          showToast("Błąd ładowania książek: " + err, "error");
           checkCompleted();
-        })
-        .getBooksData();
+        }
+      );
 
-      // Load classes
-      google.script.run
-        .withSuccessHandler(function(classes) {
+      // Fetch Classes
+      callApi('getClassesList', 'GET', null,
+        function(classes) {
           classesList = classes || [];
           populateClasses(classesList);
           checkCompleted();
-        })
-        .withFailureHandler(function(err) {
-          showToast("Błąd ładowania klas: " + (err.message || err), "error");
+        },
+        function(err) {
+          showToast("Błąd ładowania klas: " + err, "error");
           checkCompleted();
-        })
-        .getClassesList();
+        }
+      );
     }
 
     // RENDER BOOKS LIST
@@ -946,7 +1060,6 @@
       btnBorrow.disabled = true;
       studentSelect.innerHTML = '<option value="" disabled selected>Pobieranie listy uczniów...</option>';
 
-      // Check if cache contains the students
       if (studentsCache[className]) {
         populateStudents(studentsCache[className]);
         return;
@@ -954,29 +1067,28 @@
 
       if (isLocalMock) {
         setTimeout(() => {
-          populateStudents(studentsCache[className]);
+          populateStudents(mockStudents[className]);
         }, 300);
         return;
       }
 
-      // App Script Call
-      google.script.run
-        .withSuccessHandler(function(students) {
+      callApi('getStudentsFromClass', 'GET', { className: className },
+        function(students) {
           studentsCache[className] = students || [];
           populateStudents(students || []);
-        })
-        .withFailureHandler(function(err) {
-          showToast("Błąd pobierania uczniów: " + (err.message || err), "error");
+        },
+        function(err) {
+          showToast("Błąd pobierania uczniów: " + err, "error");
           studentSelect.innerHTML = '<option value="" disabled selected>Błąd ładowania</option>';
-        })
-        .getStudentsFromClass(className);
+        }
+      );
     }
 
     function populateStudents(students) {
       const studentSelect = document.getElementById("select-student");
       studentSelect.innerHTML = '<option value="" disabled selected>-- Wybierz Ucznia --</option>';
 
-      if (students.length === 0) {
+      if (!students || students.length === 0) {
         studentSelect.innerHTML = '<option value="" disabled selected>Brak uczniów w tej klasie</option>';
         return;
       }
@@ -989,8 +1101,6 @@
       });
 
       studentSelect.disabled = false;
-      
-      // Setup change listener to enable/disable button
       studentSelect.onchange = function() {
         document.getElementById("btn-borrow").disabled = !this.value;
       };
@@ -1000,7 +1110,6 @@
     function selectBook(book) {
       currentSelectedBook = book;
 
-      // Update active state in list
       const items = document.querySelectorAll(".book-item");
       items.forEach(el => {
         el.classList.remove("active");
@@ -1013,24 +1122,20 @@
         }
       });
 
-      // Show card and hide empty state
       document.getElementById("empty-state").classList.add("hidden");
       const card = document.getElementById("detail-card");
       card.classList.remove("hidden");
 
-      // Fill in static details
       document.getElementById("det-title").innerText = book.title;
       document.getElementById("det-author").innerText = book.author;
       document.getElementById("det-id").innerText = book.id;
       document.getElementById("det-publisher").innerText = book.publisher || "Brak danych";
       document.getElementById("det-location").innerText = book.location || "Brak danych";
 
-      // Render status badge
       const statusBadge = document.getElementById("det-status-badge");
       statusBadge.innerText = book.status;
       statusBadge.className = "badge " + (book.status === "Dostępna" ? "badge-success" : "badge-danger");
 
-      // Toggle operation cards
       const actionBorrow = document.getElementById("action-borrow");
       const actionReturn = document.getElementById("action-return");
 
@@ -1071,7 +1176,6 @@
 
       if (isLocalMock) {
         setTimeout(() => {
-          // Update mock databases
           const bookIndex = allBooks.findIndex(b => b.id === bookId);
           if (bookIndex !== -1) {
             allBooks[bookIndex].status = "Wypożyczona";
@@ -1081,25 +1185,22 @@
             filterBooks();
           }
           setButtonLoading(btn, false, "Przypisz książkę do ucznia");
-          showToast(`Pomyślnie wypożyczono książkę dla: ${studentName}`, "success");
+          showToast(`[Mock] Wypożyczono książkę dla: ${studentName}`, "success");
         }, 1000);
         return;
       }
 
-      // App Script Execution
-      google.script.run
-        .withSuccessHandler(function(responseMessage) {
+      callApi('borrowBook', 'POST', { bookId: bookId, studentName: studentName, className: className },
+        function(responseMessage) {
           setButtonLoading(btn, false, "Przypisz książkę do ucznia");
           showToast(responseMessage, "success");
-          
-          // Refresh list and keep selected state
           refreshDataAndKeepSelection(bookId);
-        })
-        .withFailureHandler(function(err) {
+        },
+        function(err) {
           setButtonLoading(btn, false, "Przypisz książkę do ucznia");
-          showToast("Wypożyczenie nie powiodło się: " + (err.message || err), "error");
-        })
-        .borrowBook(bookId, studentName, className);
+          showToast("Wypożyczenie nie powiodło się: " + err, "error");
+        }
+      );
     }
 
     // SUBMIT RETURN
@@ -1112,7 +1213,6 @@
 
       if (isLocalMock) {
         setTimeout(() => {
-          // Update mock database
           const bookIndex = allBooks.findIndex(b => b.id === bookId);
           if (bookIndex !== -1) {
             allBooks[bookIndex].status = "Dostępna";
@@ -1121,49 +1221,43 @@
             filterBooks();
           }
           setButtonLoading(btn, false, "Zwróć książkę");
-          showToast("Książka została zwrócona do biblioteki.", "success");
+          showToast("[Mock] Książka została zwrócona do biblioteki.", "success");
         }, 1000);
         return;
       }
 
-      // App Script Execution
-      google.script.run
-        .withSuccessHandler(function(responseMessage) {
+      callApi('returnBook', 'POST', { bookId: bookId },
+        function(responseMessage) {
           setButtonLoading(btn, false, "Zwróć książkę");
           showToast(responseMessage, "success");
-          
-          // Refresh list and keep selected state
           refreshDataAndKeepSelection(bookId);
-        })
-        .withFailureHandler(function(err) {
+        },
+        function(err) {
           setButtonLoading(btn, false, "Zwróć książkę");
-          showToast("Zwrot nie powiódł się: " + (err.message || err), "error");
-        })
-        .returnBook(bookId);
+          showToast("Zwrot nie powiódł się: " + err, "error");
+        }
+      );
     }
 
     // REFRESH DATA & PRESERVE SELECTED ITEM
     function refreshDataAndKeepSelection(selectedId) {
-      google.script.run
-        .withSuccessHandler(function(books) {
+      callApi('getBooksData', 'GET', null,
+        function(books) {
           allBooks = books || [];
           filterBooks();
-          
-          // Find updated book state and select it
           const updatedBook = allBooks.find(b => b.id == selectedId);
           if (updatedBook) {
             selectBook(updatedBook);
           } else {
-            // Hide card if book disappeared
             document.getElementById("detail-card").classList.add("hidden");
             document.getElementById("empty-state").classList.remove("hidden");
             currentSelectedBook = null;
           }
-        })
-        .withFailureHandler(function(err) {
-          showToast("Błąd odświeżania danych: " + (err.message || err), "error");
-        })
-        .getBooksData();
+        },
+        function(err) {
+          showToast("Błąd odświeżania danych: " + err, "error");
+        }
+      );
     }
 
     // LOADERS & BUTTON STATES
@@ -1187,10 +1281,8 @@
     // TOAST SYSTEM
     function showToast(message, type = 'success') {
       const container = document.getElementById("toast-container");
-      
       const toast = document.createElement("div");
       toast.className = `toast toast-${type}`;
-      
       const icon = type === 'success' ? '✓' : '✗';
       
       toast.innerHTML = `
@@ -1199,17 +1291,12 @@
       `;
       
       container.appendChild(toast);
-      
-      // Trigger reflow to apply transition
-      toast.offsetHeight;
+      toast.offsetHeight; // trigger reflow
       toast.classList.add("show");
       
-      // Remove toast after delay
       setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => {
-          toast.remove();
-        }, 300);
+        setTimeout(() => toast.remove(), 300);
       }, 4000);
     }
 
