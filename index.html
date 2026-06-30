@@ -930,6 +930,10 @@
             <div class="info-label">Lokalizacja</div>
             <div id="det-location" class="info-value">-</div>
           </div>
+          <div class="info-group">
+            <div class="info-label">Kategoria (Arkusz)</div>
+            <div id="det-sheet" class="info-value">-</div>
+          </div>
         </div>
 
         <!-- ACTION BLOCKS -->
@@ -1065,7 +1069,7 @@
     // CONFIGURATION: Set this to your Google Apps Script Web App URL if deploying
     // externally (e.g. GitHub Pages).
     // Leave it empty "" if hosting directly inside Google Apps Script (HtmlService).
-    const API_URL = "https://script.google.com/macros/s/AKfycbxJ3PFWu7bZrI-cy9KAgSr1WWeJd_bCShW5pwlnCLtlJi2PrGqwAiVCdqs5mlWqt2goZQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxjOeOPPdHLyv7QKN3VZg7JQdjADqozOhuSWZDFsmuPODNeEKglU3r94guKC6ZUshvfkQ/exec";
     // =========================================================================
 
     // Determine environment mode
@@ -1091,10 +1095,11 @@
 
     // Mock Database for Local Testing
     const mockBooks = [
-      { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "" },
-      { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25" },
-      { id: "103/C", title: "Lalka", author: "Bolesław Prus", publisher: "PWN", location: "Regał B1", status: "Dostępna", details: "" },
-      { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
+      { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "", sheetName: "Biblioteczka" },
+      { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25", sheetName: "Biblioteczka" },
+      { id: "201/S", title: "Słownik Polsko-Angielski", author: "Jan Stanisławski", publisher: "PWN", location: "Szafa Słowniki", status: "Dostępna", details: "", sheetName: "Słowniki" },
+      { id: "301/A", title: "English Grammar in Use", author: "Raymond Murphy", publisher: "Cambridge", location: "Półka Angielski", status: "Dostępna", details: "", sheetName: "Język angielski" },
+      { id: "401/D", title: "Matematyka z kluczem", author: "Marcin Kurczab", publisher: "Nowa Era", location: "Półka Dotacje", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27", sheetName: "Dotacje" }
     ];
     const mockClasses = ["KRYPTONY", "WODORKI", "NAUCZYCIELE", "TYTANY"];
     const mockStudentsList = [
@@ -1309,6 +1314,7 @@
           <span class="book-item-author">${escapeHtml(book.author)}</span>
           <div class="book-item-footer">
             <span class="book-item-id">Nr: ${escapeHtml(book.id)}</span>
+            <span class="badge" style="background-color: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-size: 0.7rem; border: 1px solid var(--border-color);">${escapeHtml(book.sheetName)}</span>
           </div>
         `;
         container.appendChild(item);
@@ -1443,6 +1449,7 @@
       document.getElementById("det-id").innerText = book.id;
       document.getElementById("det-publisher").innerText = book.publisher || "Brak danych";
       document.getElementById("det-location").innerText = book.location || "Brak danych";
+      document.getElementById("det-sheet").innerText = book.sheetName || "Biblioteczka";
 
       const statusBadge = document.getElementById("det-status-badge");
       statusBadge.innerText = book.status;
