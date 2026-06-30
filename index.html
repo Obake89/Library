@@ -72,14 +72,15 @@
       background: var(--text-muted);
     }
 
-    /* HEADER */
+    /* HEADER & NAVIGATION */
     header {
       background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-      padding: 1.5rem 2rem;
+      padding: 1.25rem 2rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1.5rem;
       box-shadow: var(--shadow-md);
     }
 
@@ -117,6 +118,39 @@
       color: var(--text-secondary);
     }
 
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.25rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
     .status-indicator {
       display: flex;
       align-items: center;
@@ -144,6 +178,21 @@
     .status-dot.external {
       background-color: #3b82f6;
       box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .nav-tabs {
+        justify-content: center;
+      }
+      .status-indicator {
+        justify-content: center;
+      }
     }
 
     /* MAIN CONTAINER */
@@ -227,7 +276,7 @@
       padding: 0 0.25rem;
     }
 
-    /* BOOK LIST */
+    /* BOOK & STUDENT LISTS */
     .book-list {
       overflow-y: auto;
       flex-grow: 1;
@@ -325,7 +374,7 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1.75rem;
     }
 
     @media (max-width: 600px) {
@@ -334,7 +383,7 @@
       }
     }
 
-    /* EMPTY STATE */
+    /* EMPTY STATES */
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -361,7 +410,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* BOOK DETAIL CARD */
+    /* CARD COMPONENTS */
     .detail-card {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
@@ -563,6 +612,131 @@
       cursor: not-allowed;
     }
 
+    /* HISTORY FILTER PILLS & LIST */
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 0 1rem 0;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .pill {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      font-family: var(--font-family);
+    }
+
+    .pill:hover {
+      background-color: var(--bg-surface-hover);
+      color: var(--text-primary);
+    }
+
+    .pill.active {
+      background-color: rgba(99, 102, 241, 0.15);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .history-item {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .history-item:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .history-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex-grow: 1;
+    }
+
+    .history-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .history-meta {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .history-meta b {
+      color: var(--text-primary);
+    }
+
+    .history-dates {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      min-width: 140px;
+    }
+
+    .history-dates b {
+      color: var(--text-secondary);
+    }
+
+    .history-action {
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 600px) {
+      .history-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      .history-dates {
+        text-align: left;
+        min-width: unset;
+      }
+    }
+
     /* TOASTS NOTIFICATIONS */
     #toast-container {
       position: fixed;
@@ -680,14 +854,23 @@
         <p>Zarządzanie wypożyczeniami książek</p>
       </div>
     </div>
+    
+    <!-- NAVIGATION TABS -->
+    <nav class="nav-tabs">
+      <button id="tab-books" class="tab-btn active" onclick="switchTab('books')">Książki</button>
+      <button id="tab-students" class="tab-btn" onclick="switchTab('students')">Uczniowie</button>
+    </nav>
+
     <div class="status-indicator">
       <div id="status-indicator-dot" class="status-dot"></div>
       <span id="status-indicator-text">Połączono z Arkuszem</span>
     </div>
   </header>
 
-  <!-- MAIN DASHBOARD -->
-  <div class="dashboard">
+  <!-- ========================================== -->
+  <!-- 1. SUBPAGE: BOOKS (Domyślnie widoczna)     -->
+  <!-- ========================================== -->
+  <div id="books-view" class="dashboard">
     <!-- SIDEBAR: SEARCH & LIST -->
     <div class="sidebar">
       <div class="search-container">
@@ -793,6 +976,66 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- 2. SUBPAGE: STUDENTS (Ukryta domyślnie)   -->
+  <!-- ========================================== -->
+  <div id="students-view" class="dashboard hidden">
+    <!-- SIDEBAR: STUDENT SEARCH & LIST -->
+    <div class="sidebar">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+          </svg>
+          <input type="text" id="student-search-bar" class="search-input" placeholder="Szukaj ucznia..." oninput="filterStudents()">
+        </div>
+        <div class="list-stats">
+          <span id="students-count">Wczytywanie...</span>
+        </div>
+      </div>
+      
+      <div id="student-list-container" class="book-list">
+        <!-- Dynamically loaded students will appear here -->
+      </div>
+    </div>
+
+    <!-- DETAILS AREA -->
+    <div id="student-details-area" class="details-area">
+      <!-- EMPTY STATE -->
+      <div id="student-empty-state" class="empty-state">
+        <div class="empty-state-icon">👤</div>
+        <h3>Brak wybranego ucznia</h3>
+        <p>Wybierz ucznia z listy po lewej stronie, aby wyświetlić historię wypożyczeń.</p>
+      </div>
+
+      <!-- STUDENT DETAIL CARD -->
+      <div id="student-detail-card" class="detail-card hidden">
+        <div class="detail-header">
+          <div class="detail-header-text">
+            <h2 id="stud-name">Imię i Nazwisko</h2>
+            <span class="author">Klasa: <span id="stud-class" class="badge" style="background-color: rgba(99, 102, 241, 0.08); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.25);">Klasa</span></span>
+          </div>
+          <span id="stud-borrows-badge" class="badge badge-success">0 wypożyczeń w toku</span>
+        </div>
+
+        <!-- HISTORY FILTERS CONTROL -->
+        <div class="filter-controls">
+          <span class="filter-label">Filtruj historię książek:</span>
+          <div class="filter-pills">
+            <button id="filter-all" class="pill active" onclick="setHistoryFilter('all')">Wszystkie</button>
+            <button id="filter-borrowed" class="pill" onclick="setHistoryFilter('borrowed')">W toku</button>
+            <button id="filter-returned" class="pill" onclick="setHistoryFilter('returned')">Zwrócone</button>
+          </div>
+        </div>
+
+        <!-- BORROW HISTORY LIST CONTAINER -->
+        <div id="history-list" class="history-list">
+          <!-- Dynamically loaded history items will appear here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOASTS CONTAINER -->
   <div id="toast-container"></div>
 
@@ -801,15 +1044,19 @@
     // State management
     let allBooks = [];
     let classesList = [];
+    let allStudents = [];
     let currentSelectedBook = null;
+    let currentSelectedStudent = null;
+    let studentHistory = [];
+    let currentHistoryFilter = "all";
     let studentsCache = {};
+    let activeTab = "books";
 
     // =========================================================================
     // CONFIGURATION: Set this to your Google Apps Script Web App URL if deploying
     // externally (e.g. GitHub Pages).
     // Leave it empty "" if hosting directly inside Google Apps Script (HtmlService).
-    // Example: const API_URL = "https://script.google.com/macros/s/AKfycbwY.../exec";
-    const API_URL = "https://script.google.com/macros/s/AKfycbwvOSMMEqOEBPUmCa49we4L8YZ8Tm9d0265O4ntSPAqRCeFx8ipTYZwwMWZZdeBKaJhDQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzpfWhyV6qIZH32MgvBdok93rDf5lxqMenXu-zMOPvbvC7qb2JuaIWNKU-8ZN-UcBPHUQ/exec";
     // =========================================================================
 
     // Determine environment mode
@@ -833,7 +1080,7 @@
       }
     });
 
-    // Mock initial data
+    // Mock Database for Local Testing
     const mockBooks = [
       { id: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", publisher: "GREG", location: "Regał A1", status: "Dostępna", details: "" },
       { id: "102/B", title: "Wesele", author: "Stanisław Wyspiański", publisher: "Znak", location: "Regał A2", status: "Wypożyczona", details: "Jan Kowalski\n2026-06-25" },
@@ -841,17 +1088,32 @@
       { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
     ];
     const mockClasses = ["KRYPTONY", "WODORKI"];
-    const mockStudents = {
-      "KRYPTONY": [{ name: "Jan Kowalski", colIndex: 1 }, { name: "Maria Wiśniewska", colIndex: 4 }],
-      "WODORKI": [{ name: "Anna Nowak", colIndex: 1 }, { name: "Piotr Wójcik", colIndex: 4 }]
+    const mockStudentsList = [
+      { name: "Jan Kowalski", className: "KRYPTONY" },
+      { name: "Maria Wiśniewska", className: "KRYPTONY" },
+      { name: "Anna Nowak", className: "WODORKI" },
+      { name: "Piotr Wójcik", className: "WODORKI" }
+    ];
+    const mockStudentHistory = {
+      "KRYPTONY_Jan Kowalski": [
+        { bookId: "102/B", title: "Wesele", author: "Stanisław Wyspiański", borrowDate: "2026-06-25", returnDate: "", isReturned: false },
+        { bookId: "101/A", title: "Pan Tadeusz", author: "Adam Mickiewicz", borrowDate: "2026-06-10", returnDate: "2026-06-20", isReturned: true }
+      ],
+      "WODORKI_Anna Nowak": [
+        { bookId: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", borrowDate: "2026-06-27", returnDate: "", isReturned: false }
+      ]
     };
 
     // Initialize application
     if (isLocalMock) {
-      console.warn("Uruchomiono w trybie demonstracyjnym (Local Mock). Funkcje backendu Google Apps Script są symulowane.");
+      console.warn("Uruchomiono w trybie demonstracyjnym (Local Mock).");
       allBooks = mockBooks;
       classesList = mockClasses;
-      studentsCache = mockStudents;
+      allStudents = mockStudentsList;
+      studentsCache = {
+        "KRYPTONY": [{ name: "Jan Kowalski" }, { name: "Maria Wiśniewska" }],
+        "WODORKI": [{ name: "Anna Nowak" }, { name: "Piotr Wójcik" }]
+      };
       
       setTimeout(() => {
         hideLoader();
@@ -865,20 +1127,17 @@
       };
     }
 
-    // GENERALIZED API CALLING LAYER (Supports Native Apps Script & External fetch API)
+    // GENERALIZED API CALLING LAYER (CORS & apps-script compatible)
     function callApi(action, method, payload, successCallback, failureCallback) {
-      if (isLocalMock) {
-        return; // Handled directly inside operational functions
-      }
+      if (isLocalMock) return;
 
-      // External API fetch mode (CORS-safe simple requests)
+      // External API fetch mode (GitHub Pages)
       if (API_URL) {
         const url = new URL(API_URL);
         let options = { redirect: 'follow' };
 
         if (method === 'POST') {
           options.method = 'POST';
-          // Send as text/plain to bypass CORS preflight check (OPTIONS)
           options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
           options.body = JSON.stringify({ action: action, ...payload });
         } else {
@@ -900,11 +1159,11 @@
             if (result.status === 'success') {
               successCallback(result.data !== undefined ? result.data : result.message);
             } else {
-              failureCallback(result.message || "Wystąpił nieznany błąd serwera.");
+              failureCallback(result.message || "Wystąpił błąd serwera.");
             }
           })
           .catch(error => {
-            console.error("API Error details:", error);
+            console.error("API error:", error);
             failureCallback("Błąd połączenia z API: " + (error.message || error));
           });
       } 
@@ -912,34 +1171,52 @@
       else if (hasAppsScriptEnv) {
         if (method === 'GET') {
           if (action === 'getBooksData') {
-            google.script.run
-              .withSuccessHandler(successCallback)
-              .withFailureHandler(failureCallback)
-              .getBooksData();
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).getBooksData();
           } else if (action === 'getClassesList') {
-            google.script.run
-              .withSuccessHandler(successCallback)
-              .withFailureHandler(failureCallback)
-              .getClassesList();
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).getClassesList();
           } else if (action === 'getStudentsFromClass') {
-            google.script.run
-              .withSuccessHandler(successCallback)
-              .withFailureHandler(failureCallback)
-              .getStudentsFromClass(payload.className);
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).getStudentsFromClass(payload.className);
+          } else if (action === 'getAllStudents') {
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).getAllStudents();
+          } else if (action === 'getStudentHistory') {
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).getStudentHistory(payload.className, payload.studentName);
           }
         } else if (method === 'POST') {
           if (action === 'borrowBook') {
-            google.script.run
-              .withSuccessHandler(successCallback)
-              .withFailureHandler(failureCallback)
-              .borrowBook(payload.bookId, payload.studentName, payload.className);
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).borrowBook(payload.bookId, payload.studentName, payload.className);
           } else if (action === 'returnBook') {
-            google.script.run
-              .withSuccessHandler(successCallback)
-              .withFailureHandler(failureCallback)
-              .returnBook(payload.bookId);
+            google.script.run.withSuccessHandler(successCallback).withFailureHandler(failureCallback).returnBook(payload.bookId);
           }
         }
+      }
+    }
+
+    // TAB NAVIGATION SWITCHER
+    function switchTab(tabId) {
+      if (activeTab === tabId) return;
+      activeTab = tabId;
+
+      const tabBooks = document.getElementById("tab-books");
+      const tabStudents = document.getElementById("tab-students");
+      const booksView = document.getElementById("books-view");
+      const studentsView = document.getElementById("students-view");
+
+      if (tabId === 'books') {
+        tabBooks.classList.add("active");
+        tabStudents.classList.remove("active");
+        booksView.classList.remove("hidden");
+        studentsView.classList.add("hidden");
+        
+        // Render current state of books
+        renderBooksList(allBooks);
+      } else {
+        tabBooks.classList.remove("active");
+        tabStudents.classList.add("active");
+        booksView.classList.add("hidden");
+        studentsView.classList.remove("hidden");
+        
+        // Load students list on-demand
+        loadStudentsData();
       }
     }
 
@@ -980,6 +1257,10 @@
       );
     }
 
+    // ==========================================
+    // BOOKS TAB LOGIC
+    // ==========================================
+    
     // RENDER BOOKS LIST
     function renderBooksList(books) {
       const container = document.getElementById("book-list-container");
@@ -1018,7 +1299,7 @@
       document.getElementById("books-count").innerText = `Suma: ${books.length} książek`;
     }
 
-    // SEARCH FILTER
+    // SEARCH FILTER (BOOKS)
     function filterBooks() {
       const query = document.getElementById("search-bar").value.toLowerCase().trim();
       if (!query) {
@@ -1065,13 +1346,6 @@
         return;
       }
 
-      if (isLocalMock) {
-        setTimeout(() => {
-          populateStudents(mockStudents[className]);
-        }, 300);
-        return;
-      }
-
       callApi('getStudentsFromClass', 'GET', { className: className },
         function(students) {
           studentsCache[className] = students || [];
@@ -1110,7 +1384,7 @@
     function selectBook(book) {
       currentSelectedBook = book;
 
-      const items = document.querySelectorAll(".book-item");
+      const items = document.querySelectorAll("#book-list-container .book-item");
       items.forEach(el => {
         el.classList.remove("active");
         const titleSpan = el.querySelector(".book-item-title");
@@ -1183,9 +1457,21 @@
             allBooks[bookIndex].details = `${studentName}\n${today}`;
             selectBook(allBooks[bookIndex]);
             filterBooks();
+
+            // sync to mock student history
+            const key = `${className}_${studentName}`;
+            if (!mockStudentHistory[key]) mockStudentHistory[key] = [];
+            mockStudentHistory[key].push({
+              bookId: bookId,
+              title: currentSelectedBook.title,
+              author: currentSelectedBook.author,
+              borrowDate: today,
+              returnDate: "",
+              isReturned: false
+            });
           }
           setButtonLoading(btn, false, "Przypisz książkę do ucznia");
-          showToast(`[Mock] Wypożyczono książkę dla: ${studentName}`, "success");
+          showToast(`Wypożyczono książkę dla: ${studentName}`, "success");
         }, 1000);
         return;
       }
@@ -1203,7 +1489,7 @@
       );
     }
 
-    // SUBMIT RETURN
+    // SUBMIT RETURN (From Books Tab)
     function submitReturn() {
       if (!currentSelectedBook) return;
       const btn = document.getElementById("btn-return");
@@ -1215,13 +1501,28 @@
         setTimeout(() => {
           const bookIndex = allBooks.findIndex(b => b.id === bookId);
           if (bookIndex !== -1) {
+            // Find borrower to update history
+            const borrowerLine = allBooks[bookIndex].details.split("\n")[0];
             allBooks[bookIndex].status = "Dostępna";
             allBooks[bookIndex].details = "";
+            
+            // update mock student history (across classes)
+            mockClasses.forEach(cls => {
+              const key = `${cls}_${borrowerLine}`;
+              if (mockStudentHistory[key]) {
+                const record = mockStudentHistory[key].find(r => r.bookId === bookId && !r.isReturned);
+                if (record) {
+                  record.isReturned = true;
+                  record.returnDate = new Date().toISOString().split('T')[0];
+                }
+              }
+            });
+
             selectBook(allBooks[bookIndex]);
             filterBooks();
           }
           setButtonLoading(btn, false, "Zwróć książkę");
-          showToast("[Mock] Książka została zwrócona do biblioteki.", "success");
+          showToast("Książka została zwrócona do biblioteki.", "success");
         }, 1000);
         return;
       }
@@ -1239,7 +1540,7 @@
       );
     }
 
-    // REFRESH DATA & PRESERVE SELECTED ITEM
+    // REFRESH DATA & PRESERVE SELECTED ITEM (BOOKS)
     function refreshDataAndKeepSelection(selectedId) {
       callApi('getBooksData', 'GET', null,
         function(books) {
@@ -1260,7 +1561,282 @@
       );
     }
 
-    // LOADERS & BUTTON STATES
+    // ==========================================
+    // STUDENTS TAB LOGIC
+    // ==========================================
+
+    // LOAD ALL STUDENTS
+    function loadStudentsData() {
+      const container = document.getElementById("student-list-container");
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;"><span class="spinner-sm"></span> Wczytywanie uczniów...</div>`;
+      document.getElementById("students-count").innerText = "Wyszukiwanie...";
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          allStudents = mockStudentsList;
+          renderStudentsList(allStudents);
+        }, 400);
+        return;
+      }
+
+      callApi('getAllStudents', 'GET', null,
+        function(students) {
+          allStudents = students || [];
+          renderStudentsList(allStudents);
+        },
+        function(err) {
+          showToast("Błąd wczytywania uczniów: " + err, "error");
+          container.innerHTML = `<div style="text-align: center; color: var(--accent-danger); padding: 2rem; font-size: 0.9rem;">Błąd ładowania listy</div>`;
+          document.getElementById("students-count").innerText = "Błąd";
+        }
+      );
+    }
+
+    // RENDER STUDENTS LIST
+    function renderStudentsList(students) {
+      const container = document.getElementById("student-list-container");
+      container.innerHTML = "";
+
+      if (students.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;">Brak uczniów w bazie</div>`;
+        document.getElementById("students-count").innerText = "Suma: 0 uczniów";
+        return;
+      }
+
+      students.forEach(student => {
+        const item = document.createElement("div");
+        item.className = "book-item";
+        if (currentSelectedStudent && currentSelectedStudent.name === student.name && currentSelectedStudent.className === student.className) {
+          item.classList.add("active");
+        }
+        item.onclick = () => selectStudent(student);
+
+        item.innerHTML = `
+          <div class="book-item-header">
+            <span class="book-item-title">${escapeHtml(student.name)}</span>
+            <span class="badge" style="background-color: rgba(99, 102, 241, 0.08); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.15);">${escapeHtml(student.className)}</span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById("students-count").innerText = `Suma: ${students.length} uczniów`;
+    }
+
+    // SEARCH FILTER (STUDENTS)
+    function filterStudents() {
+      const query = document.getElementById("student-search-bar").value.toLowerCase().trim();
+      if (!query) {
+        renderStudentsList(allStudents);
+        return;
+      }
+
+      const filtered = allStudents.filter(student => {
+        return (
+          (student.name && student.name.toLowerCase().includes(query)) ||
+          (student.className && student.className.toLowerCase().includes(query))
+        );
+      });
+      renderStudentsList(filtered);
+    }
+
+    // SELECT A STUDENT
+    function selectStudent(student) {
+      currentSelectedStudent = student;
+
+      const items = document.querySelectorAll("#student-list-container .book-item");
+      items.forEach(el => {
+        el.classList.remove("active");
+        const titleSpan = el.querySelector(".book-item-title");
+        if (titleSpan && titleSpan.innerText === student.name) {
+          const badgeSpan = el.querySelector(".badge");
+          if (badgeSpan && badgeSpan.innerText === student.className) {
+            el.classList.add("active");
+          }
+        }
+      });
+
+      document.getElementById("student-empty-state").classList.add("hidden");
+      document.getElementById("student-detail-card").classList.remove("hidden");
+
+      document.getElementById("stud-name").innerText = student.name;
+      document.getElementById("stud-class").innerText = student.className;
+
+      // Reset filter control
+      setHistoryFilter('all');
+    }
+
+    // LOAD BORROW HISTORY OF SELECTED STUDENT
+    function loadStudentHistory() {
+      const container = document.getElementById("history-list");
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;"><span class="spinner-sm"></span> Pobieranie historii...</div>`;
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          const key = `${currentSelectedStudent.className}_${currentSelectedStudent.name}`;
+          studentHistory = mockStudentHistory[key] || [];
+          renderHistoryList();
+        }, 400);
+        return;
+      }
+
+      callApi('getStudentHistory', 'GET', { className: currentSelectedStudent.className, studentName: currentSelectedStudent.name },
+        function(history) {
+          studentHistory = history || [];
+          renderHistoryList();
+        },
+        function(err) {
+          showToast("Błąd ładowania historii: " + err, "error");
+          container.innerHTML = `<div style="text-align: center; color: var(--accent-danger); padding: 2rem; font-size: 0.9rem;">Błąd ładowania historii</div>`;
+        }
+      );
+    }
+
+    // SET HISTORY LIST FILTER
+    function setHistoryFilter(filterType) {
+      currentHistoryFilter = filterType;
+
+      // Toggle pill button active class
+      document.querySelectorAll(".pill").forEach(el => el.classList.remove("active"));
+      document.getElementById("filter-" + filterType).classList.add("active");
+
+      loadStudentHistory();
+    }
+
+    // RENDER HISTORY LIST
+    function renderHistoryList() {
+      const container = document.getElementById("history-list");
+      container.innerHTML = "";
+
+      let filtered = studentHistory;
+      if (currentHistoryFilter === 'borrowed') {
+        filtered = studentHistory.filter(item => !item.isReturned);
+      } else if (currentHistoryFilter === 'returned') {
+        filtered = studentHistory.filter(item => item.isReturned);
+      }
+
+      // Count active borrows
+      const activeBorrowsCount = studentHistory.filter(item => !item.isReturned).length;
+      const borrowsBadge = document.getElementById("stud-borrows-badge");
+      borrowsBadge.innerText = `${activeBorrowsCount} wypożyczeń w toku`;
+      if (activeBorrowsCount > 0) {
+        borrowsBadge.className = "badge badge-danger";
+      } else {
+        borrowsBadge.className = "badge badge-success";
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;">Brak historii książek spełniających kryteria.</div>`;
+        return;
+      }
+
+      filtered.forEach(record => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+
+        const isRet = record.isReturned;
+        const statusBadgeClass = isRet ? "badge-success" : "badge-danger";
+        const statusText = isRet ? "Zwrócono" : "W toku";
+
+        let datesHtml = `<div>Wypożyczono: <b>${escapeHtml(record.borrowDate)}</b></div>`;
+        if (isRet) {
+          datesHtml += `<div>Zwrócono: <b>${escapeHtml(record.returnDate)}</b></div>`;
+        }
+
+        let actionButtonHtml = "";
+        if (!isRet) {
+          actionButtonHtml = `
+            <div class="history-action">
+              <button class="btn btn-danger" style="padding: 0.45rem 1rem; font-size: 0.8rem; width: auto;" onclick="submitReturnFromStudent('${escapeHtml(record.bookId)}')">
+                Zwróć
+              </button>
+            </div>
+          `;
+        }
+
+        item.innerHTML = `
+          <div class="history-info">
+            <div class="history-title">${escapeHtml(record.title)}</div>
+            <div class="history-meta">
+              <span>Autor: <b>${escapeHtml(record.author)}</b></span>
+              <span>Nr inw.: <b>${escapeHtml(record.bookId)}</b></span>
+              <span class="badge ${statusBadgeClass}">${statusText}</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+            <div class="history-dates">
+              ${datesHtml}
+            </div>
+            ${actionButtonHtml}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // ACTION: RETURN BOOK FROM STUDENT PROFILE
+    function submitReturnFromStudent(bookId) {
+      const btn = event ? event.target : null;
+      let originalHtml = "";
+      if (btn) {
+        originalHtml = btn.innerHTML;
+        setButtonLoading(btn, true, "Zwrot...");
+      }
+
+      if (isLocalMock) {
+        setTimeout(() => {
+          // Update book status in mock database
+          const bookIndex = mockBooks.findIndex(b => b.id === bookId);
+          if (bookIndex !== -1) {
+            mockBooks[bookIndex].status = "Dostępna";
+            mockBooks[bookIndex].details = "";
+          }
+
+          // Update student history record
+          const key = `${currentSelectedStudent.className}_${currentSelectedStudent.name}`;
+          const record = mockStudentHistory[key].find(r => r.bookId === bookId && !r.isReturned);
+          if (record) {
+            record.isReturned = true;
+            record.returnDate = new Date().toISOString().split('T')[0];
+          }
+
+          if (btn) setButtonLoading(btn, false, "Zwróć");
+          showToast("Książka została pomyślnie zwrócona.", "success");
+          loadStudentHistory(); // Reload history items
+          
+          // update books cache list in background
+          allBooks = mockBooks;
+          filterBooks();
+        }, 1000);
+        return;
+      }
+
+      callApi('returnBook', 'POST', { bookId: bookId },
+        function(responseMessage) {
+          if (btn) setButtonLoading(btn, false, "Zwróć");
+          showToast(responseMessage, "success");
+          
+          // Reload history
+          loadStudentHistory();
+
+          // Refresh books list cache in background
+          callApi('getBooksData', 'GET', null, function(books) {
+            allBooks = books || [];
+          }, function() {});
+        },
+        function(err) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+          }
+          showToast("Błąd podczas zwrotu: " + err, "error");
+        }
+      );
+    }
+
+    // ==========================================
+    // CORE UI LOADERS / HELPERS
+    // ==========================================
     function showLoader() {
       document.getElementById("loading-overlay").classList.add("show");
     }
@@ -1278,7 +1854,7 @@
       }
     }
 
-    // TOAST SYSTEM
+    // TOAST NOTIFICATIONS
     function showToast(message, type = 'success') {
       const container = document.getElementById("toast-container");
       const toast = document.createElement("div");
@@ -1300,7 +1876,7 @@
       }, 4000);
     }
 
-    // HTML ESCAPE HELPER
+    // HTML ESCAPING
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
