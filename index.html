@@ -858,7 +858,7 @@
     <!-- NAVIGATION TABS -->
     <nav class="nav-tabs">
       <button id="tab-books" class="tab-btn active" onclick="switchTab('books')">Książki</button>
-      <button id="tab-students" class="tab-btn" onclick="switchTab('students')">Uczniowie</button>
+      <button id="tab-students" class="tab-btn" onclick="switchTab('students')">Użytkowicy</button>
     </nav>
 
     <div class="status-indicator">
@@ -880,6 +880,14 @@
           </svg>
           <input type="text" id="search-bar" class="search-input" placeholder="Szukaj książki..." oninput="filterBooks()">
         </div>
+        
+        <!-- STATUS FILTERS FOR BOOKS -->
+        <div class="filter-pills" style="margin-top: 0.15rem; margin-bottom: 0.15rem;">
+          <button id="book-filter-all" class="pill active" onclick="setBookFilter('all')">Wszystkie</button>
+          <button id="book-filter-available" class="pill" onclick="setBookFilter('available')">Dostępne</button>
+          <button id="book-filter-borrowed" class="pill" onclick="setBookFilter('borrowed')">Wypożyczone</button>
+        </div>
+
         <div class="list-stats">
           <span id="books-count">Wczytywanie...</span>
         </div>
@@ -936,21 +944,21 @@
           
           <div class="select-grid">
             <div class="form-group">
-              <label class="form-label" for="select-class">Wybierz Klasę</label>
+              <label class="form-label" for="select-class">Wybierz Grupę</label>
               <select id="select-class" onchange="handleClassChange(this.value)">
-                <option value="" disabled selected>-- Wybierz Klasę --</option>
+                <option value="" disabled selected>-- Wybierz Grupę --</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="select-student">Wybierz Ucznia</label>
+              <label class="form-label" for="select-student">Wybierz Użytkownika</label>
               <select id="select-student" disabled>
-                <option value="" disabled selected>-- Najpierw wybierz klasę --</option>
+                <option value="" disabled selected>-- Najpierw wybierz grupę --</option>
               </select>
             </div>
           </div>
 
           <button id="btn-borrow" class="btn btn-primary" onclick="submitBorrow()" disabled>
-            <span>Przypisz książkę do ucznia</span>
+            <span>Przypisz książkę do użytkownika</span>
           </button>
         </div>
 
@@ -987,7 +995,7 @@
           <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
           </svg>
-          <input type="text" id="student-search-bar" class="search-input" placeholder="Szukaj ucznia..." oninput="filterStudents()">
+          <input type="text" id="student-search-bar" class="search-input" placeholder="Szukaj użytkowika..." oninput="filterStudents()">
         </div>
         <div class="list-stats">
           <span id="students-count">Wczytywanie...</span>
@@ -1004,8 +1012,8 @@
       <!-- EMPTY STATE -->
       <div id="student-empty-state" class="empty-state">
         <div class="empty-state-icon">👤</div>
-        <h3>Brak wybranego ucznia</h3>
-        <p>Wybierz ucznia z listy po lewej stronie, aby wyświetlić historię wypożyczeń.</p>
+        <h3>Brak wybranego użytkowika</h3>
+        <p>Wybierz użytkowika z listy po lewej stronie, aby wyświetlić historię wypożyczeń.</p>
       </div>
 
       <!-- STUDENT DETAIL CARD -->
@@ -1013,7 +1021,7 @@
         <div class="detail-header">
           <div class="detail-header-text">
             <h2 id="stud-name">Imię i Nazwisko</h2>
-            <span class="author">Klasa: <span id="stud-class" class="badge" style="background-color: rgba(99, 102, 241, 0.08); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.25);">Klasa</span></span>
+            <span class="author">Grupa: <span id="stud-class" class="badge" style="background-color: rgba(99, 102, 241, 0.08); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.25);">Grupa</span></span>
           </div>
           <span id="stud-borrows-badge" class="badge badge-success">0 wypożyczeń w toku</span>
         </div>
@@ -1049,6 +1057,7 @@
     let currentSelectedStudent = null;
     let studentHistory = [];
     let currentHistoryFilter = "all";
+    let currentBookFilter = "all";
     let studentsCache = {};
     let activeTab = "books";
 
@@ -1056,7 +1065,7 @@
     // CONFIGURATION: Set this to your Google Apps Script Web App URL if deploying
     // externally (e.g. GitHub Pages).
     // Leave it empty "" if hosting directly inside Google Apps Script (HtmlService).
-    const API_URL = "https://script.google.com/macros/s/AKfycbzpfWhyV6qIZH32MgvBdok93rDf5lxqMenXu-zMOPvbvC7qb2JuaIWNKU-8ZN-UcBPHUQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxJ3PFWu7bZrI-cy9KAgSr1WWeJd_bCShW5pwlnCLtlJi2PrGqwAiVCdqs5mlWqt2goZQ/exec";
     // =========================================================================
 
     // Determine environment mode
@@ -1087,12 +1096,16 @@
       { id: "103/C", title: "Lalka", author: "Bolesław Prus", publisher: "PWN", location: "Regał B1", status: "Dostępna", details: "" },
       { id: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", publisher: "GREG", location: "Regał C1", status: "Wypożyczona", details: "Anna Nowak\n2026-06-27" }
     ];
-    const mockClasses = ["KRYPTONY", "WODORKI"];
+    const mockClasses = ["KRYPTONY", "WODORKI", "NAUCZYCIELE", "TYTANY"];
     const mockStudentsList = [
       { name: "Jan Kowalski", className: "KRYPTONY" },
       { name: "Maria Wiśniewska", className: "KRYPTONY" },
       { name: "Anna Nowak", className: "WODORKI" },
-      { name: "Piotr Wójcik", className: "WODORKI" }
+      { name: "Piotr Wójcik", className: "WODORKI" },
+      { name: "Krzysztof Szewczyk", className: "NAUCZYCIELE" },
+      { name: "Marta Zawadzka", className: "NAUCZYCIELE" },
+      { name: "Szymon Borek", className: "TYTANY" },
+      { name: "Katarzyna Duda", className: "TYTANY" }
     ];
     const mockStudentHistory = {
       "KRYPTONY_Jan Kowalski": [
@@ -1101,6 +1114,9 @@
       ],
       "WODORKI_Anna Nowak": [
         { bookId: "104/D", title: "Quo Vadis", author: "Henryk Sienkiewicz", borrowDate: "2026-06-27", returnDate: "", isReturned: false }
+      ],
+      "NAUCZYCIELE_Krzysztof Szewczyk": [
+        { bookId: "103/C", title: "Lalka", author: "Bolesław Prus", borrowDate: "2026-06-28", returnDate: "", isReturned: false }
       ]
     };
 
@@ -1112,7 +1128,9 @@
       allStudents = mockStudentsList;
       studentsCache = {
         "KRYPTONY": [{ name: "Jan Kowalski" }, { name: "Maria Wiśniewska" }],
-        "WODORKI": [{ name: "Anna Nowak" }, { name: "Piotr Wójcik" }]
+        "WODORKI": [{ name: "Anna Nowak" }, { name: "Piotr Wójcik" }],
+        "NAUCZYCIELE": [{ name: "Krzysztof Szewczyk" }, { name: "Marta Zawadzka" }],
+        "TYTANY": [{ name: "Szymon Borek" }, { name: "Katarzyna Duda" }]
       };
       
       setTimeout(() => {
@@ -1251,7 +1269,7 @@
           checkCompleted();
         },
         function(err) {
-          showToast("Błąd ładowania klas: " + err, "error");
+          showToast("Błąd ładowania grup: " + err, "error");
           checkCompleted();
         }
       );
@@ -1299,30 +1317,50 @@
       document.getElementById("books-count").innerText = `Suma: ${books.length} książek`;
     }
 
-    // SEARCH FILTER (BOOKS)
+    // SEARCH & STATUS FILTER (BOOKS)
     function filterBooks() {
       const query = document.getElementById("search-bar").value.toLowerCase().trim();
-      if (!query) {
-        renderBooksList(allBooks);
-        return;
+      
+      let filtered = allBooks;
+      
+      // 1. Filter by status
+      if (currentBookFilter === 'available') {
+        filtered = filtered.filter(book => book.status === 'Dostępna');
+      } else if (currentBookFilter === 'borrowed') {
+        filtered = filtered.filter(book => book.status === 'Wypożyczona');
       }
-
-      const filtered = allBooks.filter(book => {
-        return (
-          (book.title && book.title.toLowerCase().includes(query)) ||
-          (book.author && book.author.toLowerCase().includes(query)) ||
-          (book.id && book.id.toLowerCase().includes(query)) ||
-          (book.publisher && book.publisher.toLowerCase().includes(query)) ||
-          (book.location && book.location.toLowerCase().includes(query))
-        );
-      });
+      
+      // 2. Filter by search query
+      if (query) {
+        filtered = filtered.filter(book => {
+          return (
+            (book.title && book.title.toLowerCase().includes(query)) ||
+            (book.author && book.author.toLowerCase().includes(query)) ||
+            (book.id && book.id.toLowerCase().includes(query)) ||
+            (book.publisher && book.publisher.toLowerCase().includes(query)) ||
+            (book.location && book.location.toLowerCase().includes(query))
+          );
+        });
+      }
+      
       renderBooksList(filtered);
+    }
+
+    // SET BOOK STATUS FILTER
+    function setBookFilter(filterType) {
+      currentBookFilter = filterType;
+      
+      // Update active class on pills
+      document.querySelectorAll("[id^='book-filter-']").forEach(el => el.classList.remove("active"));
+      document.getElementById("book-filter-" + filterType).classList.add("active");
+      
+      filterBooks();
     }
 
     // POPULATE CLASSES DROPDOWN
     function populateClasses(classes) {
       const select = document.getElementById("select-class");
-      select.innerHTML = '<option value="" disabled selected>-- Wybierz Klasę --</option>';
+      select.innerHTML = '<option value="" disabled selected>-- Wybierz Grupę --</option>';
       
       classes.forEach(cls => {
         const opt = document.createElement("option");
@@ -1339,7 +1377,7 @@
       
       studentSelect.disabled = true;
       btnBorrow.disabled = true;
-      studentSelect.innerHTML = '<option value="" disabled selected>Pobieranie listy uczniów...</option>';
+      studentSelect.innerHTML = '<option value="" disabled selected>Pobieranie listy użytkowików...</option>';
 
       if (studentsCache[className]) {
         populateStudents(studentsCache[className]);
@@ -1352,7 +1390,7 @@
           populateStudents(students || []);
         },
         function(err) {
-          showToast("Błąd pobierania uczniów: " + err, "error");
+          showToast("Błąd pobierania użytkowików: " + err, "error");
           studentSelect.innerHTML = '<option value="" disabled selected>Błąd ładowania</option>';
         }
       );
@@ -1360,10 +1398,10 @@
 
     function populateStudents(students) {
       const studentSelect = document.getElementById("select-student");
-      studentSelect.innerHTML = '<option value="" disabled selected>-- Wybierz Ucznia --</option>';
+      studentSelect.innerHTML = '<option value="" disabled selected>-- Wybierz Użytkowika --</option>';
 
       if (!students || students.length === 0) {
-        studentSelect.innerHTML = '<option value="" disabled selected>Brak uczniów w tej klasie</option>';
+        studentSelect.innerHTML = '<option value="" disabled selected>Brak użytkowików w tej grupie</option>';
         return;
       }
 
@@ -1416,7 +1454,7 @@
       // Reset action forms
       document.getElementById("select-class").value = "";
       const studentSelect = document.getElementById("select-student");
-      studentSelect.innerHTML = '<option value="" disabled selected>-- Najpierw wybierz klasę --</option>';
+      studentSelect.innerHTML = '<option value="" disabled selected>-- Najpierw wybierz grupę --</option>';
       studentSelect.disabled = true;
       document.getElementById("btn-borrow").disabled = true;
 
@@ -1442,7 +1480,7 @@
       const bookId = currentSelectedBook.id;
 
       if (!className || !studentName) {
-        showToast("Wypełnij klasę oraz wybierz ucznia.", "error");
+        showToast("Wypełnij grupę oraz wybierz użytkownika.", "error");
         return;
       }
 
@@ -1470,7 +1508,7 @@
               isReturned: false
             });
           }
-          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          setButtonLoading(btn, false, "Przypisz książkę do użytkownika");
           showToast(`Wypożyczono książkę dla: ${studentName}`, "success");
         }, 1000);
         return;
@@ -1478,12 +1516,12 @@
 
       callApi('borrowBook', 'POST', { bookId: bookId, studentName: studentName, className: className },
         function(responseMessage) {
-          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          setButtonLoading(btn, false, "Przypisz książkę do użytkownika");
           showToast(responseMessage, "success");
           refreshDataAndKeepSelection(bookId);
         },
         function(err) {
-          setButtonLoading(btn, false, "Przypisz książkę do ucznia");
+          setButtonLoading(btn, false, "Przypisz książkę do użytkownika");
           showToast("Wypożyczenie nie powiodło się: " + err, "error");
         }
       );
@@ -1568,7 +1606,7 @@
     // LOAD ALL STUDENTS
     function loadStudentsData() {
       const container = document.getElementById("student-list-container");
-      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;"><span class="spinner-sm"></span> Wczytywanie uczniów...</div>`;
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;"><span class="spinner-sm"></span> Wczytywanie użytkowników...</div>`;
       document.getElementById("students-count").innerText = "Wyszukiwanie...";
 
       if (isLocalMock) {
@@ -1585,7 +1623,7 @@
           renderStudentsList(allStudents);
         },
         function(err) {
-          showToast("Błąd wczytywania uczniów: " + err, "error");
+          showToast("Błąd wczytywania użytkowników: " + err, "error");
           container.innerHTML = `<div style="text-align: center; color: var(--accent-danger); padding: 2rem; font-size: 0.9rem;">Błąd ładowania listy</div>`;
           document.getElementById("students-count").innerText = "Błąd";
         }
@@ -1598,8 +1636,8 @@
       container.innerHTML = "";
 
       if (students.length === 0) {
-        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;">Brak uczniów w bazie</div>`;
-        document.getElementById("students-count").innerText = "Suma: 0 uczniów";
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem; font-size: 0.9rem;">Brak użytkowników w bazie</div>`;
+        document.getElementById("students-count").innerText = "Suma: 0 użytkowników";
         return;
       }
 
@@ -1620,7 +1658,7 @@
         container.appendChild(item);
       });
 
-      document.getElementById("students-count").innerText = `Suma: ${students.length} uczniów`;
+      document.getElementById("students-count").innerText = `Suma: ${students.length} użytkowników`;
     }
 
     // SEARCH FILTER (STUDENTS)
